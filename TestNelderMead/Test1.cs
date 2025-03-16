@@ -8,13 +8,13 @@ namespace TestNelderMead
     [TestClass]
     public class NelderMeadTests
     {
-        [DllImport("C:\\Users\\Admin\\OneDrive\\Рабочий стол\\NelderMead.dll", CallingConvention = CallingConvention.StdCall)]
+        [DllImport("C:\\Users\\Admin\\source\\repos\\TestNelderMead\\TestNelderMead\\NelderMead.dll", CallingConvention = CallingConvention.StdCall)]
         static extern double NM_addition(double number_one, double number_two);
-        [DllImport("C:\\Users\\Admin\\OneDrive\\Рабочий стол\\NelderMead.dll", CallingConvention = CallingConvention.StdCall)]
+        [DllImport("C:\\Users\\Admin\\source\\repos\\TestNelderMead\\TestNelderMead\\NelderMead.dll", CallingConvention = CallingConvention.StdCall)]
         static extern double NM_subtraction(double number_one, double number_two);
-        [DllImport("C:\\Users\\Admin\\OneDrive\\Рабочий стол\\NelderMead.dll", CallingConvention = CallingConvention.StdCall)]
+        [DllImport("C:\\Users\\Admin\\source\\repos\\TestNelderMead\\TestNelderMead\\NelderMead.dll", CallingConvention = CallingConvention.StdCall)]
         static extern double NM_multiplication(double number_one, double number_two);
-        [DllImport("C:\\Users\\Admin\\OneDrive\\Рабочий стол\\NelderMead.dll", CallingConvention = CallingConvention.StdCall)]
+        [DllImport("C:\\Users\\Admin\\source\\repos\\TestNelderMead\\TestNelderMead\\NelderMead.dll", CallingConvention = CallingConvention.StdCall)]
         static extern double NM_division(double number_one, double number_two);
 
         [TestMethod]
