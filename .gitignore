@@ -3,6 +3,12 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# Игнорировать папку .vscode (настройки VS Code)
+.vscode/
+
+# Игнорировать все файлы .sln (решения Visual Studio)
+*.sln
+
 # User-specific files
 *.rsuser
 *.suo
