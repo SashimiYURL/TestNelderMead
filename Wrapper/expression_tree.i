@@ -2,10 +2,10 @@
 
 // Заголовочные файлы C++ (указываем относительные пути)
 %{
-#include "../NelderMead_dll/dll/include/dll_api.h"
-#include "../NelderMead_dll/dll/include/internal_func.h"
-#include "../NelderMead_dll/dll/include/node_classes.h"
-#include "../NelderMead_dll/dll/include/expression_tree.h"
+#include "./include/dll_api.h"
+#include "./include/internal_func.h"
+#include "./include/node_classes.h"
+#include "./include/expression_tree.h"
 %}
 
 // Упрощаем макрос экспорта (если он мешает)
