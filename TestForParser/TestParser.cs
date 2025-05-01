@@ -4,33 +4,6 @@ using System.Runtime.InteropServices;
 
 namespace TestForParser
 {
-    public class NelderMeadInterop
-    {
-        // Указатель на ExpressionTree (непрозрачный указатель)
-        public struct ExpressionTreeHandle
-        {
-            public IntPtr Ptr;
-        }
-
-        // Импорт функций с точным соответствием сигнатур
-
-        // create_tree
-        [DllImport("NelderMead.dll",
-                   CallingConvention = CallingConvention.Cdecl,
-                   CharSet = CharSet.Ansi)]
-        public static extern ExpressionTreeHandle create_tree(string function_str);
-
-        // evaluate_tree
-        [DllImport("NelderMead.dll",
-                   CallingConvention = CallingConvention.Cdecl)]
-        public static extern double evaluate_tree(ExpressionTreeHandle tree, int number_variable, double[] variables);
-
-        // delete_tree
-        [DllImport("NelderMead.dll",
-                   CallingConvention = CallingConvention.Cdecl)]
-        public static extern void delete_tree(ExpressionTreeHandle tree);
-    }
-
     public class TestParser
     {
         [Theory]
@@ -113,10 +86,9 @@ namespace TestForParser
 
         private void CheckExpression(string expression, double[] variables, double result)
         {
-            var tree = NelderMeadInterop.create_tree(expression);
-            double actual = NelderMeadInterop.evaluate_tree(tree, variables.Length, variables);
+            var tree = ExpressionTree.create_tree(expression);
+            double actual = tree.evaluate([.. variables]);
             Assert.Equal(result, actual);
-            NelderMeadInterop.delete_tree(tree);
         }
     }
 

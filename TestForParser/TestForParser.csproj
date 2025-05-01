@@ -19,8 +19,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="..\NelderMead_dll\build\Debug\NelderMead.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <None Update="../NelderMead_dll/build/libNelderMead.so">
+        <Link>libexpression_tree.so</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>
