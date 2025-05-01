@@ -19,8 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="../NelderMead_dll/build/libNelderMead.so">
-        <Link>libexpression_tree.so</Link>
+    <None Include="../build/libNelderMid.so">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

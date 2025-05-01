@@ -1,4 +1,4 @@
-%module expression_tree
+%module NelderMid
 
 %nodefaultctor ExpressionTree;
 %ignore ExpressionTree::ExpressionTree(TreeNode* const, int const);
