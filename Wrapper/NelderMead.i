@@ -1,4 +1,4 @@
-%module NelderMid
+%module NelderMead
 
 %nodefaultctor ExpressionTree;
 %ignore ExpressionTree::ExpressionTree(TreeNode* const, int const);
@@ -24,9 +24,9 @@ namespace std {
 %exception {
     try {
         $action
-    } catch (std::exception e) {
+    } catch (std::logic_error e) {
         SWIG_CSharpSetPendingException(SWIG_CSharpApplicationException, e.what());
-    } catch (std::exception* e) {
+    } catch (std::logic_error* e) {
         SWIG_CSharpSetPendingException(SWIG_CSharpApplicationException, e->what());
     } catch(...) {
         SWIG_CSharpSetPendingException(SWIG_CSharpApplicationException, "Unknown exception");

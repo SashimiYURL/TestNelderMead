@@ -7,6 +7,15 @@ namespace TestForParser
     public class TestParser
     {
         [Theory]
+        [InlineData("5*6+")]
+        public void JSON(string expression)
+        {
+            ExpressionTree tree = ExpressionTree.create_tree(expression);
+            string json = tree.json_tree();
+            Assert.Equal(1, 1);
+        }
+
+        [Theory]
         [InlineData("x1+x2", new double[] { 1, 2 }, 3.0)]
         [InlineData("x1 - x2", new double[] { 5.0, 8.0 }, -3.0)]
         [InlineData("x1 * x2*x3", new double[] { 5.0, 2.0, 3.0 }, 30.0)]
