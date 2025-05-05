@@ -43,4 +43,4 @@ public:
     int get_number_variables();
 };
 
-#include "../NelderMead_dll/dll/include/expression_tree.h"
+#include "./include/expression_tree.h"
