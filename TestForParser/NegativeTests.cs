@@ -75,6 +75,5 @@ namespace TestForParser
             var exception = Assert.Throws<NullReferenceException>(() => tree.evaluate([.. variables]));
             Assert.Equal(errorMessage, exception.Message);
         }
-
     }
 }
