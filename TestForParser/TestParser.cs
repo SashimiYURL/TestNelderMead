@@ -92,7 +92,7 @@ namespace TestForParser
         public void FloatingNumbers(string expression, double[] variables, double result)
             => CheckExpression(expression, variables, result);
 
-        private void CheckExpression(string expression, double[] variables, double result)
+        private void CheckExpression(string expression, double[]? variables, double result)
         {
             var tree = ExpressionTree.create_tree(expression);
             double actual = tree.evaluate([.. variables]);
@@ -102,7 +102,7 @@ namespace TestForParser
 
     public class TestParserExceptions
     {
-        private void ExceptionEvaluteCatchingCheker(string expression, double[] variables, string errorMessage)
+        private void ExceptionEvaluteCatchingCheker(string expression, double[]? variables, string errorMessage)
         {
             var tree = ExpressionTree.create_tree(expression);
 
@@ -110,7 +110,7 @@ namespace TestForParser
             Assert.Equal(errorMessage, exception.Message);
         }
 
-        private void ExceptionCreateCatchingCheker(string expression, double[] variables, string errorMessage)
+        private void ExceptionCreateCatchingCheker(string expression, double[]? variables, string errorMessage)
         {
 
             var exception = Assert.Throws<ApplicationException>(() => ExpressionTree.create_tree(expression));
@@ -141,7 +141,7 @@ namespace TestForParser
         [InlineData("a * (b + c))", null, "Invalid expression string")]
         [InlineData("()", null, "Invalid expression string")]
         [InlineData("x + ()", null, "Invalid expression string")]
-        public void SyntaxException(string expression, double[] variables, string errorMessage)
+        public void SyntaxException(string expression, double[]? variables, string errorMessage)
             => ExceptionCreateCatchingCheker(expression, variables, errorMessage);
 
         [Theory]
@@ -151,7 +151,7 @@ namespace TestForParser
         [InlineData("1#2", null, "Invalid expression string")]
         [InlineData("a$ + b@", null, "Invalid expression string")]
         [InlineData("", null, "Invalid expression string")] 
-        public void IncorrectNumbers(string expression, double[] variables, string errorMessage)
+        public void IncorrectNumbers(string expression, double[]? variables, string errorMessage)
             => ExceptionCreateCatchingCheker(expression, variables, errorMessage);
 
         [Theory]
@@ -159,12 +159,12 @@ namespace TestForParser
         [InlineData("bar(1, 2)", null, "Invalid expression string")]
         [InlineData("sine(x)", null, "Invalid expression string")] 
         [InlineData("sqrtt(y)", null, "Invalid expression string")]
-        public void IncorrectNamesAndFunction(string expression, double[] variables, string errorMessage)
+        public void IncorrectNamesAndFunction(string expression, double[]? variables, string errorMessage)
             => ExceptionEvaluteCatchingCheker(expression, variables, errorMessage);
 
         [Theory]
         [InlineData("x1+x2", null, "Invalid expression string")]
-        public void ArgumentNullException(string expression, double[] variables, string errorMessage)
+        public void ArgumentNullException(string expression, double[]? variables, string errorMessage)
         {
             var tree = ExpressionTree.create_tree(expression);
 
