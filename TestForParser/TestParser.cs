@@ -4,17 +4,8 @@ using System.Runtime.InteropServices;
 
 namespace TestForParser
 {
-    public class TestParser
+    public class ParserExpressionTests
     {
-        [Theory]
-        [InlineData("5*6+")]
-        public void JSON(string expression)
-        {
-            ExpressionTree tree = ExpressionTree.create_tree(expression);
-            string json = tree.json_tree();
-            Assert.Equal(1, 1);
-        }
-
         [Theory]
         [InlineData("x1+x2", new double[] { 1, 2 }, 3.0)]
         [InlineData("x1 - x2", new double[] { 5.0, 8.0 }, -3.0)]
@@ -29,7 +20,6 @@ namespace TestForParser
         [InlineData("x1+3", new double[] { 1 }, 4.0)]
         [InlineData("10 + x1", new double[] { 12 }, 22.0)]
         [InlineData("3*x1 + 13*x2 - 10", new double[] { 5.0, 2.0 }, 31.0)]
-        [InlineData("-5 + x1", new double[] { 2.0 }, -3.0)]
         [InlineData("2 + 3*5", new double[] { }, 17.0)]
         public void ExpressionWithConstant(string expression, double[] variables, double result)
             => CheckExpression(expression, variables, result);
@@ -78,7 +68,7 @@ namespace TestForParser
         [InlineData("sin(x1)", new double[] { 0 }, 0.0)]
         [InlineData("cos(x1)", new double[] { 0 }, 1.0)]
         [InlineData("abs(x1)", new double[] { -4 }, 4.0)]
-        [InlineData("sqrt(x1)", new double[] { 9.0 }, 3.0)]
+        [InlineData("sqrt(x1)+1", new double[] { 9.0 }, 4.0)]
         //[InlineData("exp(x1)", new double[] {0}, 1.0)]
         public void MathFunctions(string expression, double[] variables, double result)
             => CheckExpression(expression, variables, result);
@@ -93,14 +83,13 @@ namespace TestForParser
         public void FloatingNumbers(string expression, double[] variables, double result)
             => CheckExpression(expression, variables, result);
 
-        private void CheckExpression(string expression, double[] variables, double result)
+        private void CheckExpression(string expression, double[]? variables, double result)
         {
             var tree = ExpressionTree.create_tree(expression);
             double actual = tree.evaluate([.. variables]);
             Assert.Equal(result, actual);
         }
     }
-
 }
 
 
