@@ -83,6 +83,12 @@ namespace TestForParser
         public void FloatingNumbers(string expression, double[] variables, double result)
             => CheckExpression(expression, variables, result);
 
+        [Theory]
+        [InlineData("(1-x1)^2 + 100*(x2-x1^2)^2", new double[] { 1, 3}, 400.0)]
+        public void RozenbergFunction(string expression, double[] variables, double result)
+            => CheckExpression(expression, variables, result);
+
+
         private void CheckExpression(string expression, double[]? variables, double result)
         {
             var tree = ExpressionTree.create_tree(expression);
