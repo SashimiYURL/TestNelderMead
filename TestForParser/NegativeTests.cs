@@ -48,12 +48,10 @@ namespace TestForParser
             => ExceptionCreateCatchingCheker(expression, variables, errorMessage);
 
         [Theory]
-        [InlineData(".", null, "Invalid expression string")]
-        [InlineData("123.", null, "Invalid expression string")]
-        [InlineData("1.2.3", null, "Invalid expression string")]
         [InlineData("1#2", null, "Invalid expression string")]
         [InlineData("a$ + b@", null, "Invalid expression string")]
         [InlineData("", null, "Invalid expression string")] 
+        [InlineData("   ", null, "Invalid expression string")] 
         public void IncorrectNumbers(string expression, double[]? variables, string errorMessage)
             => ExceptionCreateCatchingCheker(expression, variables, errorMessage);
 

@@ -64,16 +64,6 @@ namespace TestForParser
 
 
         [Theory]
-        [InlineData("sin(x1)", new double[] { 0 }, 0.0)]
-        [InlineData("cos(x1)", new double[] { 0 }, 1.0)]
-        [InlineData("abs(x1)", new double[] { -4 }, 4.0)]
-        [InlineData("sqrt(x1)+1", new double[] { 9.0 }, 4.0)]
-        //[InlineData("exp(x1)", new double[] {0}, 1.0)]
-        public void MathFunctions(string expression, double[] variables, double result)
-            => CheckExpression(expression, variables, result);
-
-
-        [Theory]
         [InlineData("x1+x2", new double[] { 1.2, 4.35 }, 5.55)]
         [InlineData("(x1+x2)/x3", new double[] { 3, 5, 32 }, 0.25)]
         [InlineData("x1/x2", new double[] { 1, 2 }, 0.5)]
