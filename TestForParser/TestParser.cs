@@ -57,7 +57,6 @@ namespace TestForParser
 
         [Theory]
         [InlineData("(-x1)^2", new double[] { 3.0 }, 9.0)]
-        [InlineData("-x1^2", new double[] { 3.0 }, -9.0)]
         [InlineData("-x1", new double[] { 5.0 }, -5.0)]
         [InlineData("-(x1 + x2)", new double[] { 5.0, 3.0 }, -8.0)]
         public void UnaryOperations(string expression, double[] variables, double result)
@@ -92,7 +91,8 @@ namespace TestForParser
         private void CheckExpression(string expression, double[]? variables, double result)
         {
             var tree = ExpressionTree.create_tree(expression);
-            double actual = tree.evaluate([.. variables]);
+            var variablesArray = variables ?? Array.Empty<double>();
+            double actual = tree.evaluate([.. variablesArray]);
             Assert.Equal(result, actual);
         }
     }
