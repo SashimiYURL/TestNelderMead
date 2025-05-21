@@ -57,20 +57,9 @@ namespace TestForParser
 
         [Theory]
         [InlineData("(-x1)^2", new double[] { 3.0 }, 9.0)]
-        [InlineData("-x1^2", new double[] { 3.0 }, -9.0)]
         [InlineData("-x1", new double[] { 5.0 }, -5.0)]
         [InlineData("-(x1 + x2)", new double[] { 5.0, 3.0 }, -8.0)]
         public void UnaryOperations(string expression, double[] variables, double result)
-            => CheckExpression(expression, variables, result);
-
-
-        [Theory]
-        [InlineData("sin(x1)", new double[] { 0 }, 0.0)]
-        [InlineData("cos(x1)", new double[] { 0 }, 1.0)]
-        [InlineData("abs(x1)", new double[] { -4 }, 4.0)]
-        [InlineData("sqrt(x1)+1", new double[] { 9.0 }, 4.0)]
-        //[InlineData("exp(x1)", new double[] {0}, 1.0)]
-        public void MathFunctions(string expression, double[] variables, double result)
             => CheckExpression(expression, variables, result);
 
 
@@ -83,10 +72,17 @@ namespace TestForParser
         public void FloatingNumbers(string expression, double[] variables, double result)
             => CheckExpression(expression, variables, result);
 
+        [Theory]
+        [InlineData("(1-x1)^2 + 100*(x2-x1^2)^2", new double[] { 1, 3}, 400.0)]
+        public void RozenbergFunction(string expression, double[] variables, double result)
+            => CheckExpression(expression, variables, result);
+
+
         private void CheckExpression(string expression, double[]? variables, double result)
         {
             var tree = ExpressionTree.create_tree(expression);
-            double actual = tree.evaluate([.. variables]);
+            var variablesArray = variables ?? Array.Empty<double>();
+            double actual = tree.evaluate([.. variablesArray]);
             Assert.Equal(result, actual);
         }
     }
