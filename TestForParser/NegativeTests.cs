@@ -10,7 +10,8 @@ namespace TestForParser
         {
             var tree = ExpressionTree.create_tree(expression);
             var variablesArray = variables ?? Array.Empty<double>();
-            var exception = Assert.Throws<ApplicationException>(() => tree.evaluate([.. variablesArray]));
+            var point = Point.create_point([.. variablesArray], (uint)variablesArray.Length);
+            var exception = Assert.Throws<ApplicationException>(() => tree.evaluate(point));
             Assert.Equal(errorMessage, exception.Message);
         }
 
@@ -32,7 +33,6 @@ namespace TestForParser
         [InlineData("x1+6", new double[] { 50.0, 2.0 }, "The number of variables is incorrect")]
         [InlineData("x1+x2", new double[] { 50.0, 2.0, 3.5 }, "The number of variables is incorrect")]
         [InlineData("x1-x2", new double[] { 50.0}, "The number of variables is incorrect")]
-        [InlineData("x1+x2-x3", new double[] {}, "The number of variables is incorrect")]
         public void IncorrectVariablesNumbers(string expression, double[] variables, string errorMessage)
             => ExceptionEvaluteCatchingCheker(expression, variables, errorMessage);
 
@@ -64,12 +64,12 @@ namespace TestForParser
             => ExceptionCreateCatchingCheker(expression, variables, errorMessage);
 
         [Theory]
-        [InlineData("x1+x2", null)]
-        public void ArgumentNullException(string expression, double[]? variables)
+        [InlineData("x1+x2")]
+        public void ArgumentNullException(string expression)
         {
             var tree = ExpressionTree.create_tree(expression);
 
-            var exception = Assert.Throws<NullReferenceException>(() => tree.evaluate([.. variables!]));
+            var exception = Assert.Throws<NullReferenceException>(() => tree.evaluate(null));
             Assert.NotNull(exception);
         }
     }
