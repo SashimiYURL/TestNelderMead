@@ -17,7 +17,7 @@ namespace PointTests
             _disposables.Clear();
         }
 
-        private Point CreateTestPoint(params double[] coords)
+        private IPoint CreateTestPoint(params double[] coords)
         {
             var point = Point.create_point([.. coords], (uint)coords.Length);
             _disposables.Add(point);
@@ -106,8 +106,12 @@ namespace PointTests
         public void GetVectorPoint_ReturnsAllCoordinates()
         {
             var point = CreateTestPoint(1.1, 2.2, 3.3);
-
-            var coords = point.get_vector_point();
+            var coords = new List<double>
+            {
+                point.get(0),
+                point.get(1),
+                point.get(2)
+            };
 
             Assert.Equal(new List<double> { 1.1, 2.2, 3.3 }, coords);
         }
