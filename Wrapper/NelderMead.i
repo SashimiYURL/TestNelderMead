@@ -2,6 +2,7 @@
 
 %{
 #include "./include/dll_api.h"
+#include "./include/ipoint.h"
 #include "./include/ifunction.h"
 #include "./include/point.h"
 #include "./include/simplex.h"
@@ -17,16 +18,17 @@
 %include "std_except.i"
 
 // Указываем SWIG не создавать конструкторы по умолчанию
+%nodefaultctor IPoint;
 %nodefaultctor Point;
 %nodefaultctor Simplex;
 %nodefaultctor ExpressionTree;
+%nodefaultctor NelderMeadMethod;
 
 // Объявляем шаблоны для работы с векторами
 namespace std {
     %template(DoubleVector) vector<double>;
-    %template(DoubleVectorVector) vector<vector<double>>;
-    %template(DoubleVectorVectorVector) vector<vector<vector<double>>>;
-    %template(PointVector) vector<Point*>;
+    %template(IPointVector) vector<IPoint*>;
+    %template(SimplexVector) vector<Simplex*>;
 }
 
 // Обработка исключений
@@ -42,19 +44,21 @@ namespace std {
     }
 }
 
-// Интерфейс IFunction
-class IFunction {
+// Интерфейс IPoint
+class IPoint {
 public:
-    virtual ~IFunction();
-    virtual double evaluate(const Point* variables) const = 0;
-    virtual int get_number_variables() = 0;
-    virtual bool check_number_variables(int number_variables) = 0;
+    static IPoint* create_point(const std::vector<double>& coords, size_t N);
+    virtual double get(size_t index) const = 0;
+    virtual void set(double value, size_t index) = 0;
+    virtual size_t dimensions() const = 0;
+    virtual IPoint* clone() const = 0;
+    virtual ~IPoint() = default;
 };
 
-// Класс Point - только фабричные методы
-class Point {
+// Класс Point
+class Point : public IPoint {
 public:
-    static Point* create_point(const std::vector<double>& coords, size_t N);
+    explicit Point(const std::vector<double>& coords);
     double get(size_t index) const;
     void set(double value, size_t index);
     size_t dimensions() const;
@@ -63,15 +67,23 @@ public:
     ~Point();
 };
 
-// Класс Simplex - только фабричные методы
+// Интерфейс IFunction
+class IFunction {
+public:
+    virtual ~IFunction() = default;
+    virtual double evaluate(const IPoint* variables) const = 0;
+    virtual int get_number_variables() = 0;
+};
+
+// Класс Simplex
 class Simplex {
 public:
-    static Simplex* create_simplex(const std::vector<Point*>& coords_list);
-    static Simplex* create_simplex(double step, size_t dimension, const Point* x0 = nullptr);
+    static Simplex* create_simplex(const std::vector<IPoint*>& coords_list);
+    static Simplex* create_simplex(double step, size_t dimension, const IPoint* x0 = nullptr);
     void sort_simplex(const IFunction* function);
-    Point* centroid(int exclude_index);
-    Point* get_vertex(size_t index) const;
-    void set_vertex(Point* vertex, size_t index);
+    IPoint* centroid(int exclude_index);
+    IPoint* get_vertex(size_t index) const;
+    void set_vertex(IPoint* vertex, size_t index);
     size_t dimension() const;
     size_t vertex_count() const;
     Simplex* clone() const;
@@ -82,7 +94,7 @@ public:
 class SimplexHistory {
 public:
     void add_simplex(Simplex* simplex);
-    std::vector<std::vector<std::vector<double>>> get_vector_history();
+    std::vector<Simplex*> get_vector_history();
     ~SimplexHistory();
 };
 
@@ -91,8 +103,7 @@ class ExpressionTree : public IFunction {
 public:
     ~ExpressionTree();
     static ExpressionTree* create_tree(const std::string& function_str);
-    double evaluate(const Point* variables) const override;
-    bool check_number_variables(int number_variables) override;
+    double evaluate(const IPoint* variables = nullptr) const override;
     std::string json_tree();
     int get_number_variables() override;
 };
@@ -100,8 +111,8 @@ public:
 // Класс NelderMeadMethod
 class NelderMeadMethod {
 public:
-    NelderMeadMethod(IFunction* function_, double reflection_ = 1,
-                   double expansion_ = 2, double contraction_ = 0.5,
+    NelderMeadMethod(IFunction* function_, double reflection_ = 1.0,
+                   double expansion_ = 2.0, double contraction_ = 0.5,
                    double homothety_ = 0.5, double dispersion_ = 0.0001);
     
     void set_simplex(const Simplex* simplex_);
@@ -110,10 +121,20 @@ public:
 };
 
 // Указание на то, что C# должен освобождать память для этих классов
-%newobject ExpressionTree::create_tree;
-%newobject Point::create_point;
+%newobject IPoint::create_point;
+%newobject IPoint::clone;
 %newobject Point::clone;
 %newobject Simplex::create_simplex;
 %newobject Simplex::centroid;
 %newobject Simplex::clone;
+%newobject Simplex::get_vertex;
+%newobject ExpressionTree::create_tree;
 %newobject NelderMeadMethod::minimum_search;
+
+// Отключаем сложные операции с векторами
+%ignore std::vector<IPoint*>::reserve;
+%ignore std::vector<IPoint*>::insert;
+%ignore std::vector<IPoint*>::erase;
+%ignore std::vector<Simplex*>::reserve;
+%ignore std::vector<Simplex*>::insert;
+%ignore std::vector<Simplex*>::erase;
