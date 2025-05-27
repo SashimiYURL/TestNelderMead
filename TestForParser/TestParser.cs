@@ -20,7 +20,7 @@ namespace TestForParser
         [InlineData("x1+3", new double[] { 1 }, 4.0)]
         [InlineData("10 + x1", new double[] { 12 }, 22.0)]
         [InlineData("3*x1 + 13*x2 - 10", new double[] { 5.0, 2.0 }, 31.0)]
-        [InlineData("2 + 3*5", new double[] {0}, 17.0)]
+        [InlineData("2 + 3*5", new double[] {}, 17.0)]
         public void ExpressionWithConstant(string expression, double[] variables, double result)
             => CheckExpression(expression, variables, result);
 
@@ -82,8 +82,17 @@ namespace TestForParser
         {
             var tree = ExpressionTree.create_tree(expression);
             var variablesArray = variables ?? Array.Empty<double>();
-            var point = Point.create_point([.. variablesArray], (uint)variablesArray.Length);
-            double actual = tree.evaluate(point);
+            double actual;
+            if (variablesArray.Length > 0)
+            {
+                var point = Point.create_point([.. variablesArray], (uint)variablesArray.Length);
+                actual = tree.evaluate(point);
+            }
+            else
+            {
+                actual = tree.evaluate();
+            }
+            
             Assert.Equal(result, actual);
         }
     }
