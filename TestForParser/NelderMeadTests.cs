@@ -4,28 +4,21 @@ using System.Runtime.InteropServices;
 
 namespace NelderMeadTests
 {
-
-    public class NelderMeadBasicTests : IDisposable
+    public abstract class NelderMeadTestBase
     {
-        private List<IDisposable> _disposables = new List<IDisposable>();
+        protected ExpressionTree CreateTestFunction()
+            => ExpressionTree.create_tree("x1^2 + x2^2");
 
-        // Параболоид: f(x,y) = x1^2 + x2^2
-        private ExpressionTree CreateTestFunction()
+        protected NelderMeadMethod InitMethod(string expression)
         {
-            var tree = ExpressionTree.create_tree("x1^2 + x2^2");
-            _disposables.Add(tree);
-            return tree;
-        }
+            var tree = ExpressionTree.create_tree(expression);
+            return new NelderMeadMethod(tree);
+        }    
 
-        private IPoint CreatePoint(double x, double y)
-        {
-            var coords = new List<double> { x, y };
-            var point = IPoint.create_point([.. coords], 2);
-            _disposables.Add(point);
-            return point;
-        }
+        protected IPoint CreatePoint(params double[] coords)
+            => IPoint.create_point([.. coords], (uint)coords.Count());
 
-        private Simplex CreateSimplexFromPoints(params IPoint[] points)
+        protected Simplex CreateSimplexFromPoints(params IPoint[] points)
         {
             var pointVector = new IPointVector();
 
@@ -36,29 +29,21 @@ namespace NelderMeadTests
 
             var simplex = Simplex.create_simplex(pointVector);
 
-            _disposables.Add(simplex);
             return simplex;
         }
 
-
-
-        private Simplex CreateDefaultSimplex(double step, IPoint startPoint = null)
+        protected Simplex CreateDefaultSimplex(double step, IPoint startPoint)
         {
             var simplex = startPoint != null
-                ? Simplex.create_simplex(step, (uint)startPoint.dimensions(), startPoint)
+                ? Simplex.create_simplex(step, startPoint.dimensions(), startPoint)
                 : Simplex.create_simplex(step, 2);
-            _disposables.Add(simplex);
             return simplex;
         }
+    }
 
-        public void Dispose()
-        {
-            foreach (var disposable in _disposables)
-            {
-                disposable?.Dispose();
-            }
-            _disposables.Clear();
-        }
+
+    public class NelderMeadBasicTests : NelderMeadTestBase
+    {
 
         [Fact]
         public void Constructor_WithDefaultParameters_InitializesCorrectly()
@@ -154,35 +139,19 @@ namespace NelderMeadTests
         }
     }
 
-    public class TypicalTestsFunction
+    public class TypicalTestsFunction : NelderMeadTestBase
     {
-        private IPoint CreatePoint(double x, double y)
-        {
-            var coords = new List<double> { x, y };
-            var point = IPoint.create_point([.. coords], 2);
-            return point;
-        }
-
-        private Simplex CreateDefaultSimplex(double step, IPoint startPoint = null)
-        {
-            var simplex = startPoint != null
-                ? Simplex.create_simplex(step, (uint)startPoint.dimensions(), startPoint)
-                : Simplex.create_simplex(step, 2);
-            return simplex;
-        }
-
         [Fact]
         public void RosenbrockFunction_CorrectOptimization()
         {
             var tree = ExpressionTree.create_tree("(1-x1)^2 + 100*(x2-x1^2)^2");
             var method = new NelderMeadMethod(tree, 1.0, 2.0, 0.5, 0.5, 1e-12);
 
-            var history = method.minimum_search(1000); // SimplexHistory
-            var simplexes = history.get_vector_history(); // SimplexVector
+            var history = method.minimum_search(1000); 
+            var simplexes = history.get_vector_history();
 
             var lastSimplex = simplexes[simplexes.Count - 1];
 
-            // Получаем вершины симплекса
             var vertices = Enumerable.Range(0, (int)lastSimplex.vertex_count())
                                      .Select(i => lastSimplex.get_vertex((uint)i))
                                      .ToList();
@@ -199,8 +168,7 @@ namespace NelderMeadTests
         [Fact]
         public void MinimumSearch_HimmelblauFunction_ConvergesToLocalMinimum()
         {
-            var tree = ExpressionTree.create_tree("(x1^2+x2-11)^2 + (x1+x2^2-7)^2");
-            var method = new NelderMeadMethod(tree);
+            var method = InitMethod("(x1^2+x2-11)^2 + (x1+x2^2-7)^2");
 
             var startPoint = CreatePoint(3.0, 2.0);
             using var simplex = CreateDefaultSimplex(0.5, startPoint);
@@ -262,8 +230,7 @@ namespace NelderMeadTests
         [Fact]
         public void MinimumSearch_ThreeHumpCamelFunction_ConvergesToGlobalMinimum()
         {
-            var tree = ExpressionTree.create_tree("2*x1^2 - 1.05*x1^4 + x1^6/6 + x1*x2 + x2^2");
-            var method = new NelderMeadMethod(tree);
+            var method = InitMethod("2*x1^2 - 1.05*x1^4 + x1^6/6 + x1*x2 + x2^2");
 
             var history = method.minimum_search(200);
             var simplexes = history.get_vector_history();
@@ -282,29 +249,12 @@ namespace NelderMeadTests
         }
     }
 
-
-    // 
-    public class SimpleFunctionTests
+    public class SimpleFunctionTests : NelderMeadTestBase
     {
-        private IPoint CreatePoint(params double[] coords)
-        {
-            var point = IPoint.create_point([.. coords], (uint)coords.Count());
-            return point;
-        }
-
-        private Simplex CreateDefaultSimplex(double step, IPoint startPoint = null)
-        {
-            var simplex = startPoint != null
-                ? Simplex.create_simplex(step, (uint)startPoint.dimensions(), startPoint)
-                : Simplex.create_simplex(step, 2);
-            return simplex;
-        }
-
         [Fact]
         public void ConstantFunction_DoesNotMove()
         {
-            var tree = ExpressionTree.create_tree("5 + 0*x1");
-            var method = new NelderMeadMethod(tree);
+            var method = InitMethod("5 + 0*x1");
 
             var startPoint = CreatePoint(1.0);
             using var simplex = CreateDefaultSimplex(0.1, startPoint);
@@ -350,8 +300,7 @@ namespace NelderMeadTests
         [Fact]
         public void Simple1DFunction_Converges()
         {
-            var tree = ExpressionTree.create_tree("x1^2");
-            var method = new NelderMeadMethod(tree);
+            var method = InitMethod("x1^2");
 
             var startPoint = CreatePoint(2.0);
             using var simplex = CreateDefaultSimplex(0.5, startPoint);
@@ -369,8 +318,7 @@ namespace NelderMeadTests
         [Fact]
         public void Quadratic2DFunction_Converges()
         {
-            var tree = ExpressionTree.create_tree("x1^2 + x2^2");
-            var method = new NelderMeadMethod(tree);
+            var method = InitMethod("x1^2 + x2^2");
 
             var startPoint = CreatePoint(1.0, 1.0);
             using var simplex = CreateDefaultSimplex(0.5, startPoint);
@@ -418,8 +366,7 @@ namespace NelderMeadTests
         [Fact]
         public void SimpleQuadratic_Converges()
         {
-            var tree = ExpressionTree.create_tree("x1^2");
-            var method = new NelderMeadMethod(tree);
+            var method = InitMethod("x1^2");
 
             var startPoint = CreatePoint(5.0);
             using var simplex = CreateDefaultSimplex(0.1, startPoint);
