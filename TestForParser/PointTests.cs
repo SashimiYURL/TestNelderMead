@@ -4,25 +4,10 @@ using System.Runtime.InteropServices;
 
 namespace PointTests
 {
-    public class PointBasicTests : IDisposable
+    public class PointBasicTests 
     {
-        private List<IDisposable> _disposables = new List<IDisposable>();
-
-        public void Dispose()
-        {
-            foreach (var disposable in _disposables)
-            {
-                disposable.Dispose();
-            }
-            _disposables.Clear();
-        }
-
         private IPoint CreateTestPoint(params double[] coords)
-        {
-            var point = Point.create_point([.. coords], (uint)coords.Length);
-            _disposables.Add(point);
-            return point;
-        }
+            => Point.create_point([.. coords], (uint)coords.Length);
 
         [Fact]
         public void CreatePoint_WithValidCoords_ReturnsPoint()
@@ -95,7 +80,6 @@ namespace PointTests
             var original = CreateTestPoint(1.0, 2.0);
 
             var clone = original.clone();
-            _disposables.Add(clone);
             clone.set(3.0, 0);
 
             Assert.Equal(3.0, clone.get(0));
